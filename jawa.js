@@ -79,6 +79,17 @@ const specialRoles = {
     36: "Sekretaris"
 };
 
+const carouselViewport = document.getElementById('carousel-viewport');
+const carouselPrevBtn = document.getElementById('carousel-prev');
+const carouselNextBtn = document.getElementById('carousel-next');
+
+function updateCarouselButtons() {
+    if (!carouselViewport || !carouselPrevBtn || !carouselNextBtn) return;
+    const maxScroll = carouselViewport.scrollWidth - carouselViewport.clientWidth;
+    carouselPrevBtn.disabled = carouselViewport.scrollLeft <= 4;
+    carouselNextBtn.disabled = carouselViewport.scrollLeft >= maxScroll - 4;
+}
+
 function renderStudents(filter = "") {
     const grid = document.getElementById('student-grid');
     const noResults = document.getElementById('no-results');
@@ -115,11 +126,32 @@ function renderStudents(filter = "") {
     } else {
         noResults.classList.add('hidden');
     }
+
+    if (carouselViewport) {
+        carouselViewport.scrollTo({ left: 0 });
+    }
+    updateCarouselButtons();
 }
 
 document.getElementById('search-input').addEventListener('input', (e) => {
     renderStudents(e.target.value);
 });
+
+if (carouselPrevBtn && carouselNextBtn && carouselViewport) {
+    carouselPrevBtn.addEventListener('click', () => {
+        carouselViewport.scrollBy({ left: -carouselViewport.clientWidth, behavior: 'smooth' });
+    });
+
+    carouselNextBtn.addEventListener('click', () => {
+        carouselViewport.scrollBy({ left: carouselViewport.clientWidth, behavior: 'smooth' });
+    });
+
+    carouselViewport.addEventListener('scroll', () => {
+        window.requestAnimationFrame(updateCarouselButtons);
+    });
+
+    window.addEventListener('resize', updateCarouselButtons);
+}
 
 function openModal(name, absen, img, role) {
     document.getElementById('modal-name').innerText = name;
@@ -155,9 +187,44 @@ document.getElementById('student-modal').addEventListener('click', (e) => {
     }
 });
 
-document.getElementById('mobile-menu-btn').addEventListener('click', () => {
-    const menu = document.getElementById('mobile-menu');
-    menu.classList.toggle('hidden');
+function openGalleryImage(cardEl) {
+    const img = cardEl.querySelector('.gallery-img');
+    const title = cardEl.querySelector('.gallery-title');
+    const sub = cardEl.querySelector('.gallery-sub');
+
+    document.getElementById('gallery-modal-img').src = img.src;
+    document.getElementById('gallery-modal-title').textContent = title ? title.textContent.trim() : "";
+    document.getElementById('gallery-modal-sub').textContent = sub ? sub.textContent.trim() : "";
+
+    document.getElementById('gallery-modal').classList.remove('hidden');
+}
+
+function closeGalleryModal() {
+    const modal = document.getElementById('gallery-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+document.getElementById('gallery-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'gallery-modal') {
+        closeGalleryModal();
+    }
+});
+
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+
+mobileMenuBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+    mobileMenuBtn.classList.toggle('active');
+});
+
+document.querySelectorAll('.mobile-link').forEach((link) => {
+    link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        mobileMenuBtn.classList.remove('active');
+    });
 });
 
 window.onload = function() {
