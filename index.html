@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="dark scroll-smooth">
+<html lang="id" class="dark scroll-smooth is-typing">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,9 +27,15 @@
                     <a href="#siswa" class="nav-link">Anggota</a>
                     <a href="#galeri" class="nav-link">Galeri</a>
                     <a href="#proyek" class="nav-link">Proyek</a>
+                    <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Ganti tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
                 </div>
 
                 <div class="mobile-btn-wrapper">
+                    <button id="theme-toggle-btn-mobile" class="theme-toggle-btn-mobile" aria-label="Ganti tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <button id="mobile-menu-btn" class="mobile-btn" aria-label="Buka menu">
                         <span class="hamburger-line line1"></span>
                         <span class="hamburger-line line2"></span>
@@ -39,7 +45,7 @@
             </div>
         </div>
 
-        <div id="mobile-menu" class="mobile-menu-box hidden">
+        <div id="mobile-menu" class="mobile-menu-box">
             <a href="#beranda" class="mobile-link">Beranda</a>
             <a href="#struktur" class="mobile-link">Struktur</a>
             <a href="#siswa" class="mobile-link">Anggota</a>
@@ -47,6 +53,7 @@
             <a href="#proyek" class="mobile-link">Proyek</a>
         </div>
     </nav>
+
 
     <section id="beranda" class="hero-section">
         <div class="hero-bg-glow-1"></div>
@@ -91,7 +98,7 @@
         </div>
     </section>
 
-    <section id="struktur" class="section-structure">
+    <section id="struktur" class="section-structure reveal">
         <div class="nav-container">
             <div class="section-header">
                 <h2 class="section-title">Struktur <span class="text-gold">Organisasi</span></h2>
@@ -149,7 +156,7 @@
         </div>
     </section>
 
-    <section id="siswa" class="section-students">
+    <section id="siswa" class="section-students reveal">
         <div class="nav-container">
             <div class="students-header-wrapper">
                 <div>
@@ -184,7 +191,7 @@
         </div>
     </section>
 
-    <section id="galeri" class="section-gallery">
+    <section id="galeri" class="section-gallery reveal">
         <div class="nav-container">
             <div class="section-header">
                 <h2 class="section-title">Galeri <span class="text-gold">Momen</span></h2>
@@ -193,39 +200,39 @@
 
             <div class="gallery-grid">
                 <div class="gallery-card" onclick="openGalleryImage(this)">
-                    <img src="img/fotbar2.png" onerror="this.onerror=null; this.src='https://placehold.co/600x400/181818/FFD700?text=XI+PPLG+Project';" alt="Momen Kelas 1" class="gallery-img">
+                    <img src="img/pplglogo.png" onerror="this.onerror=null; this.src='https://placehold.co/600x400/181818/FFD700?text=XI+PPLG+Project';" alt="Momen Kelas 1" class="gallery-img">
                     <div class="gallery-overlay">
                         <div>
                             <h4 class="gallery-title"> </h4>
-                            <p class="gallery-sub"></p>
+                            <p class="gallery-sub">Lab PPLG</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="gallery-card" onclick="openGalleryImage(this)">
-                    <img src="img/fotbar3.png" onerror="this.onerror=null; this.src='https://placehold.co/600x400/181818/FFD700?text=Bersama+Wali+Kelas';" alt="Momen Kelas     2" class="gallery-img">
+                    <img src="walikelas.png" onerror="this.onerror=null; this.src='https://placehold.co/600x400/181818/FFD700?text=Bersama+Wali+Kelas';" alt="Momen Kelas 2" class="gallery-img">
                     <div class="gallery-overlay">
                         <div>
-                            <h4 class="gallery-title"></h4>
-                            <p class="gallery-sub">makhluk pplg</p>
+                            <h4 class="gallery-title">Foto Bersama Wali Kelas</h4>
+                            <p class="gallery-sub">Pak Devita & XI PPLG</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="gallery-card" onclick="openGalleryImage(this)">
-                    <img src="img/fotbar1.png" onerror="this.onerror=null; this.src='https://placehold.co/600x400/181818/FFD700?text=Event+Kelas';" alt="Momen Kelas 3" class="gallery-img">
+                    <img src="img/pplglogo.png" onerror="this.onerror=null; this.src='https://placehold.co/600x400/181818/FFD700?text=Event+Kelas';" alt="Momen Kelas 3" class="gallery-img">
                     <div class="gallery-overlay">
                         <div>
-                            <h4 class="gallery-title"></h4>
-                            <p class="gallery-sub"></p>
+                            <h4 class="gallery-title">Event Sekolah</h4>
+                            <p class="gallery-sub">Diesnatalis</p>
                         </div>
                     </div>
-                </div>  
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="proyek" class="section-projects">
+    <section id="proyek" class="section-projects reveal">
         <div class="nav-container">
             <div class="section-header">
                 <h2 class="section-title">Proyek <span class="text-gold">Siswa</span></h2>
@@ -293,7 +300,13 @@
             <button onclick="closeGalleryModal()" class="modal-close-btn">
                 <i class="fas fa-times modal-close-icon"></i>
             </button>
+            <button onclick="showGalleryImage(currentGalleryIndex - 1)" class="gallery-nav-btn gallery-nav-prev" aria-label="Foto sebelumnya">
+                <i class="fas fa-chevron-left"></i>
+            </button>
             <img id="gallery-modal-img" src="" alt="" class="gallery-modal-img">
+            <button onclick="showGalleryImage(currentGalleryIndex + 1)" class="gallery-nav-btn gallery-nav-next" aria-label="Foto berikutnya">
+                <i class="fas fa-chevron-right"></i>
+            </button>
             <p id="gallery-modal-title" class="gallery-modal-title"></p>
             <p id="gallery-modal-sub" class="gallery-modal-sub"></p>
         </div>

@@ -18,12 +18,17 @@
         const el1 = document.getElementById('typing-line1');
         const el2 = document.getElementById('typing-line2');
         if (!el1 || !el2) {
+            document.documentElement.classList.remove('is-typing');
             return;
         }
         el1.textContent = "";
         el2.textContent = "";
         typeText(el1, line1Text, 0, () => {
-            setTimeout(() => typeText(el2, line2Text, 0), delayBetweenLines);
+            setTimeout(() => {
+                typeText(el2, line2Text, 0, () => {
+                    document.documentElement.classList.remove('is-typing');
+                });
+            }, delayBetweenLines);
         });
     }
 
@@ -111,7 +116,7 @@ function renderStudents(filter = "") {
 
             card.innerHTML = `
                 <div class="card-student-img-box">
-                    <img src="${imgName}" onerror="this.onerror=null; this.src='https://placehold.co/300x300/181818/FFD700?text=Absen+${absenNum}';" alt="${name}" class="card-student-img">
+                    <img src="${imgName}" loading="lazy" onload="this.classList.add('img-loaded')" onerror="this.onerror=null; this.src='https://placehold.co/300x300/181818/FFD700?text=Absen+${absenNum}'; this.classList.add('img-loaded');" alt="${name}" class="card-student-img">
                     <span class="card-student-absen-badge">${absenNum}</span>
                 </div>
                 <h4 class="card-student-name">${name}</h4>
@@ -187,7 +192,18 @@ document.getElementById('student-modal').addEventListener('click', (e) => {
     }
 });
 
-function openGalleryImage(cardEl) {
+let currentGalleryIndex = 0;
+
+function getGalleryCards() {
+    return Array.from(document.querySelectorAll('.gallery-card'));
+}
+
+function showGalleryImage(index) {
+    const cards = getGalleryCards();
+    if (cards.length === 0) return;
+
+    currentGalleryIndex = (index + cards.length) % cards.length;
+    const cardEl = cards[currentGalleryIndex];
     const img = cardEl.querySelector('.gallery-img');
     const title = cardEl.querySelector('.gallery-title');
     const sub = cardEl.querySelector('.gallery-sub');
@@ -195,7 +211,12 @@ function openGalleryImage(cardEl) {
     document.getElementById('gallery-modal-img').src = img.src;
     document.getElementById('gallery-modal-title').textContent = title ? title.textContent.trim() : "";
     document.getElementById('gallery-modal-sub').textContent = sub ? sub.textContent.trim() : "";
+}
 
+function openGalleryImage(cardEl) {
+    const cards = getGalleryCards();
+    const index = cards.indexOf(cardEl);
+    showGalleryImage(index === -1 ? 0 : index);
     document.getElementById('gallery-modal').classList.remove('hidden');
 }
 
@@ -212,20 +233,99 @@ document.getElementById('gallery-modal').addEventListener('click', (e) => {
     }
 });
 
+document.addEventListener('keydown', (e) => {
+    const modal = document.getElementById('gallery-modal');
+    if (modal.classList.contains('hidden')) return;
+
+    if (e.key === 'ArrowRight') {
+        showGalleryImage(currentGalleryIndex + 1);
+    } else if (e.key === 'ArrowLeft') {
+        showGalleryImage(currentGalleryIndex - 1);
+    } else if (e.key === 'Escape') {
+        closeGalleryModal();
+    }
+});
+
 const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 const mobileMenu = document.getElementById('mobile-menu');
 
 mobileMenuBtn.addEventListener('click', () => {
-    mobileMenu.classList.toggle('hidden');
+    mobileMenu.classList.toggle('open');
     mobileMenuBtn.classList.toggle('active');
 });
 
 document.querySelectorAll('.mobile-link').forEach((link) => {
     link.addEventListener('click', () => {
-        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('open');
         mobileMenuBtn.classList.remove('active');
     });
 });
+
+const THEME_STORAGE_KEY = "pplg-theme";
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
+const themeToggleBtnMobile = document.getElementById('theme-toggle-btn-mobile');
+
+function applyThemeIcon(theme) {
+    const iconClass = theme === 'light' ? 'fa-sun' : 'fa-moon';
+    [themeToggleBtn, themeToggleBtnMobile].forEach((btn) => {
+        if (!btn) return;
+        const icon = btn.querySelector('i');
+        if (icon) {
+            icon.className = `fas ${iconClass}`;
+        }
+    });
+}
+
+function setTheme(theme) {
+    if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+    }
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+    applyThemeIcon(theme);
+}
+
+function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    setTheme(isLight ? 'dark' : 'light');
+}
+
+function initTheme() {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    setTheme(savedTheme || (prefersLight ? 'light' : 'dark'));
+}
+
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleTheme);
+}
+if (themeToggleBtnMobile) {
+    themeToggleBtnMobile.addEventListener('click', toggleTheme);
+}
+
+function initScrollReveal() {
+    const revealEls = document.querySelectorAll('.reveal');
+
+    if (!('IntersectionObserver' in window)) {
+        revealEls.forEach((el) => el.classList.add('reveal-visible'));
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('reveal-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+
+    revealEls.forEach((el) => observer.observe(el));
+}
+
+initTheme();
+initScrollReveal();
 
 window.onload = function() {
     renderStudents();
