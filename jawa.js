@@ -327,6 +327,32 @@ function initScrollReveal() {
 initTheme();
 initScrollReveal();
 
+const GALLERY_AUTOSLIDE_INTERVAL_MS = 5200;
+
+function initGalleryAutoSlide() {
+    const viewport = document.getElementById('gallery-viewport');
+    if (!viewport) return;
+
+    let isPaused = false;
+
+    viewport.addEventListener('mouseenter', () => { isPaused = true; });
+    viewport.addEventListener('mouseleave', () => { isPaused = false; });
+
+    setInterval(() => {
+        const galleryModal = document.getElementById('gallery-modal');
+        if (isPaused || (galleryModal && !galleryModal.classList.contains('hidden'))) return;
+
+        const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+        if (viewport.scrollLeft >= maxScroll - 4) {
+            viewport.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+            viewport.scrollBy({ left: viewport.clientWidth, behavior: 'smooth' });
+        }
+    }, GALLERY_AUTOSLIDE_INTERVAL_MS);
+}
+
+initGalleryAutoSlide();
+
 window.onload = function() {
     renderStudents();
 };
