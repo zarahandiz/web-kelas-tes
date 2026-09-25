@@ -327,7 +327,7 @@ function initScrollReveal() {
 initTheme();
 initScrollReveal();
 
-const GALLERY_AUTOSLIDE_INTERVAL_MS = 5200;
+const GALLERY_AUTOSLIDE_INTERVAL_MS = 5400;
 
 function initGalleryAutoSlide() {
     const viewport = document.getElementById('gallery-viewport');
